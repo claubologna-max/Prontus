@@ -1,0 +1,304 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prontus — Seleção Anonimizada por Competências</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased">
+
+
+  <!-- Cabeçalho -->
+  <header class="bg-slate-900 text-white shadow-md">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+      <div>
+        <h1 class="text-2xl font-bold tracking-tight text-emerald-400">PRONTUS</h1>
+        <p class="text-xs text-slate-300">Recrutamento cego orientado a competências e impacto real</p>
+      </div>
+      <nav class="flex gap-2">
+        <button id="tab-candidato" onclick="mudarAba('candidato')" class="px-4 py-2 rounded-lg text-sm font-semibold bg-emerald-600 text-white transition">
+          Sou Candidato(a)
+        </button>
+        <button id="tab-recrutador" onclick="mudarAba('recrutador')" class="px-4 py-2 rounded-lg text-sm font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition">
+          Painel do Recrutador (Vitrine)
+        </button>
+      </nav>
+    </div>
+  </header>
+
+
+  <main class="max-w-6xl mx-auto px-6 py-8">
+
+
+    <!-- ABA 1: FORMULÁRIO DO CANDIDATO -->
+    <section id="secao-candidato" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 pb-4 border-b border-slate-100">
+        <div>
+          <h2 class="text-xl font-bold text-slate-900">Cadastro de Perfil Profissional</h2>
+          <p class="text-sm text-slate-500">Seus dados pessoais são protegidos por LGPD e ocultados da triagem inicial.</p>
+        </div>
+        <button type="button" onclick="preencherExemplo()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-3 py-2 rounded-lg border border-slate-300 transition">
+          Preencher Exemplo Rápido
+        </button>
+      </div>
+
+
+      <form id="form-prontus" onsubmit="enviarCandidatura(event)" class="space-y-5">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">Nome Completo *</label>
+            <input type="text" id="nome_completo" required class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">E-mail *</label>
+            <input type="email" id="email" required class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">Telefone / WhatsApp *</label>
+            <input type="text" id="telefone" required class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">LinkedIn (opcional)</label>
+            <input type="text" id="linkedin_url" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none" />
+          </div>
+        </div>
+
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">Área / Cargo Pretendido *</label>
+            <select id="titulo_estrategico" required class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none bg-white">
+              <option value="Desenvolvedor Full Stack / Backend">Desenvolvedor(a) Full Stack / Backend</option>
+              <option value="Analista de Suporte Técnico">Analista de Suporte Técnico</option>
+              <option value="Analista de Sistemas / Negócios">Analista de Sistemas / Negócios</option>
+              <option value="Coordenador de Tecnologia">Coordenador(a) de Tecnologia</option>
+              <option value="Assistente Administrativo">Assistente Administrativo</option>
+              <option value="Assistente Jurídico">Assistente Jurídico</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">Competências-Chave (separadas por vírgula) *</label>
+            <input type="text" id="competencias_chave" required placeholder="Ex: Gestão de Contratos, Excel Avançado, ERP" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none" />
+          </div>
+        </div>
+
+
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1">Resumo de Experiência e Resultados Entregues *</label>
+          <textarea id="curriculo_bruto" rows="4" required placeholder="Descreva suas principais entregas, projetos resolvidos e resultados alcançados..." class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"></textarea>
+        </div>
+
+
+        <div class="flex items-start gap-2 pt-1">
+          <input type="checkbox" id="lgpd_aceite" required class="mt-1 rounded text-emerald-600 focus:ring-emerald-500" />
+          <label for="lgpd_aceite" class="text-xs text-slate-600">
+            Autorizo o processamento dos meus dados para geração de perfil profissional anonimizado conforme a LGPD, mantendo meus dados de contato restritos até a etapa de entrevista.
+          </label>
+        </div>
+
+
+        <div class="flex items-center gap-4 pt-2">
+          <button type="submit" id="btn-enviar" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-2.5 rounded-lg text-sm shadow-sm transition">
+            Enviar Cadastro via Automação IA
+          </button>
+          <span id="status-envio" class="text-sm font-medium"></span>
+        </div>
+      </form>
+    </section>
+
+
+    <!-- ABA 2: VITRINE ANONIMIZADA DO RECRUTADOR -->
+    <section id="secao-recrutador" class="hidden space-y-6">
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h2 class="text-xl font-bold text-slate-900">Vitrine de Talentos Anonimizados</h2>
+          <p class="text-sm text-slate-500">Triagem livre de viés: nomes, idades, datas e instituições foram neutralizados por IA.</p>
+        </div>
+        <button onclick="carregarVitrine()" class="bg-slate-900 hover:bg-slate-800 text-white text-sm font-medium px-4 py-2 rounded-lg transition">
+          Atualizar Vitrine
+        </button>
+      </div>
+
+
+      <!-- Alerta caso a chave anon ainda não tenha sido colada -->
+      <div id="aviso-chave" class="hidden bg-amber-50 border border-amber-300 text-amber-900 rounded-xl p-4 text-sm">
+        <strong>Atenção:</strong> Cole sua chave pública (<code>anon</code> / <code>publishable</code>) do Supabase na variável <code>SUPABASE_ANON_KEY</code> dentro deste arquivo HTML para listar os candidatos gravados no banco.
+      </div>
+
+
+      <div id="grid-candidatos" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Cards carregados via JavaScript -->
+      </div>
+    </section>
+
+
+  </main>
+
+
+  <script>
+    // =========================================================================
+    // CONFIGURAÇÃO DO PROJETO PRONTUS
+    // =========================================================================
+    const MAKE_WEBHOOK_URL = "https://hook.us2.make.com/yxofd55xfemkwuno23k87yk1rrjl4m1s";
+    const SUPABASE_URL = "https://ozojzsnrtkhryhsdiavb.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_SP_UCyZReObw8ws6Xxh-jg_1k-POGcl";
+    // =========================================================================
+
+
+    let supabaseClient = null;
+    if (SUPABASE_ANON_KEY && !SUPABASE_ANON_KEY.includes("COLE_SUA_CHAVE")) {
+      supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    }
+
+
+    function mudarAba(aba) {
+      const secCand = document.getElementById("secao-candidato");
+      const secRec = document.getElementById("secao-recrutador");
+      const tabCand = document.getElementById("tab-candidato");
+      const tabRec = document.getElementById("tab-recrutador");
+
+
+      if (aba === "candidato") {
+        secCand.classList.remove("hidden");
+        secRec.classList.add("hidden");
+        tabCand.className = "px-4 py-2 rounded-lg text-sm font-semibold bg-emerald-600 text-white transition";
+        tabRec.className = "px-4 py-2 rounded-lg text-sm font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition";
+      } else {
+        secCand.classList.add("hidden");
+        secRec.classList.remove("hidden");
+        tabRec.className = "px-4 py-2 rounded-lg text-sm font-semibold bg-emerald-600 text-white transition";
+        tabCand.className = "px-4 py-2 rounded-lg text-sm font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition";
+        carregarVitrine();
+      }
+    }
+
+
+    function preencherExemplo() {
+      document.getElementById("nome_completo").value = "Carlos Eduardo Mendes";
+      document.getElementById("email").value = "carlos.mendes@exemplo.com";
+      document.getElementById("telefone").value = "11998765432";
+      document.getElementById("linkedin_url").value = "linkedin.com/in/carlosmendes";
+      document.getElementById("titulo_estrategico").value = "Analista de Sistemas / Negócios";
+      document.getElementById("competencias_chave").value = "SQL, Levantamento de Requisitos, BPMN, Power BI, ERP";
+      document.getElementById("curriculo_bruto").value = "Atuação no mapeamento de processos financeiros, redução de 30% no tempo de fechamento mensal e implantação de indicadores gerenciais em Power BI.";
+      document.getElementById("lgpd_aceite").checked = true;
+    }
+
+
+    async function enviarCandidatura(event) {
+      event.preventDefault();
+      const btn = document.getElementById("btn-enviar");
+      const status = document.getElementById("status-envio");
+
+
+      btn.disabled = true;
+      btn.textContent = "Processando anonimização...";
+      status.className = "text-sm font-medium text-slate-600";
+      status.textContent = "Enviando para o fluxo de IA...";
+
+
+      const params = new URLSearchParams({
+        nome_completo: document.getElementById("nome_completo").value,
+        email: document.getElementById("email").value,
+        telefone: document.getElementById("telefone").value,
+        linkedin_url: document.getElementById("linkedin_url").value,
+        titulo_estrategico: document.getElementById("titulo_estrategico").value,
+        competencias_chave: document.getElementById("competencias_chave").value,
+        curriculo_bruto: document.getElementById("curriculo_bruto").value,
+        lgpd_aceite: "true"
+      });
+
+
+      try {
+        const response = await fetch(`${MAKE_WEBHOOK_URL}?${params.toString()}`, { method: "GET" });
+        if (response.ok) {
+          status.className = "text-sm font-semibold text-emerald-600";
+          status.textContent = "Perfil enviado! Aguarde ~5 segundos e confira na aba Painel do Recrutador.";
+          document.getElementById("form-prontus").reset();
+        } else {
+          throw new Error("Falha no retorno do Webhook");
+        }
+      } catch (err) {
+        status.className = "text-sm font-semibold text-red-600";
+        status.textContent = "Erro ao enviar. Verifique se o cenário no Make está ativado (ON).";
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Enviar Cadastro via Automação IA";
+      }
+    }
+
+
+    async function carregarVitrine() {
+      const grid = document.getElementById("grid-candidatos");
+      const aviso = document.getElementById("aviso-chave");
+
+
+      if (!supabaseClient) {
+        aviso.classList.remove("hidden");
+        grid.innerHTML = "";
+        return;
+      }
+
+
+      aviso.classList.add("hidden");
+      grid.innerHTML = `<p class="text-sm text-slate-500 col-span-full">Carregando perfis anonimizados do Supabase...</p>`;
+
+
+      const { data, error } = await supabaseClient
+        .from("candidatos_anonimizados")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+
+      if (error) {
+        grid.innerHTML = `<div class="col-span-full bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl text-sm">
+          Erro ao ler banco: ${error.message}. Verifique se o RLS da tabela <strong>candidatos_anonimizados</strong> permite leitura pública (SELECT).
+        </div>`;
+        return;
+      }
+
+
+      if (!data || data.length === 0) {
+        grid.innerHTML = `<p class="text-sm text-slate-500 col-span-full">Nenhum candidato anonimizado encontrado ainda.</p>`;
+        return;
+      }
+
+
+      grid.innerHTML = data.map(cand => {
+        const skills = Array.isArray(cand.competencias_chave)
+          ? cand.competencias_chave
+          : String(cand.competencias_chave || "").split(",");
+
+
+        return `
+          <article class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm flex flex-col justify-between">
+            <div>
+              <div class="flex justify-between items-center mb-3">
+                <span class="text-xs font-mono font-bold bg-slate-100 text-slate-700 px-2.5 py-1 rounded-md border border-slate-200">
+                  ${cand.codigo_anonimo || "PRONTUS-ID"}
+                </span>
+                <span class="text-xs font-bold bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-full border border-emerald-200">
+                  Resolutividade: ${cand.score_resolutividade || 85}%
+                </span>
+              </div>
+              <h3 class="text-lg font-bold text-slate-900 mb-2">${cand.titulo_estrategico || "Perfil Estratégico"}</h3>
+              <p class="text-sm text-slate-600 leading-relaxed mb-4">${cand.historico_impacto || ""}</p>
+            </div>
+            <div>
+              <div class="flex flex-wrap gap-1.5 mb-4">
+                ${skills.map(s => `<span class="text-xs bg-slate-100 text-slate-700 px-2 py-0.5 rounded">${s.trim()}</span>`).join("")}
+              </div>
+              <button onclick="alert('Solicitação de entrevista registrada para ${cand.codigo_anonimo}. Os dados pessoais permanecem protegidos até o aceite do candidato.')"
+                class="w-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold py-2.5 rounded-lg transition">
+                Solicitar Entrevista (Cega)
+              </button>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+  </script>
+</body>
+</html>
