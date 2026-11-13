@@ -323,7 +323,11 @@
         hora: hora
       });
 
-      await fetch(`${MAKE_AGENDAMENTO_WEBHOOK_URL}?${params.toString()}`, { method: "GET" });
+      await fetch("https://hook.us2.make.com/yxofd55xfemkwuno23k87yk1...", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(dadosCandidato)
+})
       alert(`Convite enviado com sucesso! Assim que o(a) candidato(a) ${codigo} confirmar no e-mail, o horário será salvo automaticamente no Google Agenda.`);
       fecharModal();
     }
