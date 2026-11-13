@@ -309,15 +309,15 @@
       const data = document.getElementById("entrevista-data").value;
       const hora = document.getElementById("entrevista-hora").value;
 
-      if (MAKE_AGENDAMENTO_WEBHOOK_URL.includes("COLE_AQUI")) {
+      if (MAKE_AGENDAMENTO_WEBHOOK_URL.includes("https://hook.us2.make.com/ty5y6nuaoddvav6thiiazhu27s8s82x3")) {
         alert(`Convite preparado para ${codigo} (${data} às ${hora}). Para enviar o e-mail real com aceite automático no Google Agenda, conecte o Webhook de agendamento do Make.`);
         fecharModal();
         return;
       }
 
       const params = new URLSearchParams({
-        codigo_anonimo: codigo,
-        cargo: cargo,
+       acao: "solicitar",
+       candidato_anonimo_id: codigo,
         recrutador_email: recrutadorEmail,
         data: data,
         hora: hora
