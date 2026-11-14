@@ -159,7 +159,7 @@
     // CONFIGURAÇÃO DO PROJETO PRONTUS
     // =========================================================================
     const MAKE_WEBHOOK_URL = "https://hook.us2.make.com/yxofd55xfemkwuno23k87yk1rrjl4m1s";
-    const MAKE_AGENDAMENTO_WEBHOOK_URL = "COLE_AQUI_O_WEBHOOK_DE_AGENDAMENTO_DO_MAKE";
+    const MAKE_AGENDAMENTO_WEBHOOK_URL = "https://hook.us2.make.com/ty5y6nuaoddvav6thiiazhu27s8s82x3";
     const SUPABASE_URL = "https://ozojzsnrtkhryhsdiavb.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_SP_UCyZReObw8ws6Xxh-jg_1k-POGcl";
     // =========================================================================
@@ -205,7 +205,7 @@
       btn.disabled = true;
       btn.textContent = "Processando anonimização...";
       status.className = "text-sm font-medium text-slate-600";
-      status.textContent = "Enviando para o fluxo de IA...";
+      status.textContent = "Enviando para o fluxo...";
 
       const params = new URLSearchParams({
         nome_completo: document.getElementById("nome_completo").value,
@@ -242,8 +242,7 @@
 
       const { data, error } = await supabaseClient
         .from("candidatos_anonimizados")
-        .select("*")
-        .order("created_at", { ascending: false });
+        .select("*");
 
       if (error) {
         grid.innerHTML = `<div class="col-span-full bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl text-sm">
@@ -309,25 +308,16 @@
       const data = document.getElementById("entrevista-data").value;
       const hora = document.getElementById("entrevista-hora").value;
 
-      if (MAKE_AGENDAMENTO_WEBHOOK_URL.includes("https://hook.us2.make.com/ty5y6nuaoddvav6thiiazhu27s8s82x3")) {
-        alert(`Convite preparado para ${codigo} (${data} às ${hora}). Para enviar o e-mail real com aceite automático no Google Agenda, conecte o Webhook de agendamento do Make.`);
-        fecharModal();
-        return;
-      }
-
       const params = new URLSearchParams({
-       acao: "solicitar",
-       candidato_anonimo_id: codigo,
+        acao: "solicitar",
+        candidato_anonimo_id: codigo,
+        cargo: cargo,
         recrutador_email: recrutadorEmail,
         data: data,
         hora: hora
       });
 
-      await fetch("https://hook.us2.make.com/yxofd55xfemkwuno23k87yk1...", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify(dadosCandidato)
-})
+      await fetch(`${MAKE_AGENDAMENTO_WEBHOOK_URL}?${params.toString()}`, { method: "GET" });
       alert(`Convite enviado com sucesso! Assim que o(a) candidato(a) ${codigo} confirmar no e-mail, o horário será salvo automaticamente no Google Agenda.`);
       fecharModal();
     }
